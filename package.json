@@ -4,18 +4,18 @@
     "description": "Template for the WebSocket remote control task",
     "main": "index.js",
     "type": "module",
-    "scripts": {
-        "start": "node ./index.js",
-        "start:dev": "nodemon ./index.js",
+        "scripts": {
+        "start": "tsx ./index.ts",
+        "start:dev": "tsx watch ./index.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Andrei Auchynnikau",
     "keywords": [],
     "license": "ISC",
-    "devDependencies": {
-        "nodemon": "^3.0.3"
-    },
     "dependencies": {
         "ws": "^8.16.0"
+    },
+    "devDependencies": {
+        "tsx": "^4.7.1"
     }
 }
