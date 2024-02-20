@@ -4,7 +4,7 @@
     "description": "Template for the WebSocket remote control task",
     "main": "index.js",
     "type": "module",
-        "scripts": {
+    "scripts": {
         "start": "tsx ./index.ts",
         "start:dev": "tsx watch ./index.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,6 +16,7 @@
         "ws": "^8.16.0"
     },
     "devDependencies": {
+        "@types/node": "^20.11.19",
         "tsx": "^4.7.1"
     }
 }
