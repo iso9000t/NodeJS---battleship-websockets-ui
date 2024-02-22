@@ -1,12 +1,13 @@
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { handleCommand } from '../controller/handleCommand';
 
 const wss = new WebSocketServer({ port: 3000 });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (ws: WebSocket) => {
   console.log('Client connected.');
 
-  ws.on('message', (message) => {
+  ws.on('message', (data) => {
+    const message = data.toString();
     handleCommand(ws, message);
   });
 
