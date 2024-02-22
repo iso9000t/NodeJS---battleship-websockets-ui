@@ -1,9 +1,11 @@
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer } from 'ws';
 import { handleCommand } from '../controller/handleCommand';
 
-const wss = new WebSocketServer({ port: 3000 });
+const wsPort = process.env.WS_PORT || 3000;
 
-wss.on('connection', (ws: WebSocket) => {
+export const wss = new WebSocketServer({ port: Number(wsPort) });
+
+wss.on('connection', (ws) => {
   console.log('Client connected.');
 
   ws.on('message', (data) => {
@@ -14,4 +16,3 @@ wss.on('connection', (ws: WebSocket) => {
   ws.send(JSON.stringify({ message: 'Welcome to the WebSocket server!' }));
 });
 
-console.log('WebSocket server started on ws://localhost:3000');
