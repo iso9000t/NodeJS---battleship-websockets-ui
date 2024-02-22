@@ -1,5 +1,4 @@
 import { Player, Room, Game } from './models'
-
 class Database {
   private players: Player[] = [];
   private rooms: Room[] = [];
