@@ -1,21 +1,22 @@
-import { WebSocket, WebSocketServer } from 'ws';
+// Ensure WebSocketClient is imported correctly at the top
+import { WebSocketServer } from 'ws';
 import { handleRegistration } from '../handlers/registrationHandler';
 import { handleCreateRoom } from '../handlers/createRoomHandler';
+import { Command, WebSocketClient } from '../models/models'; // Adjust import path as needed
 
-// Adjust handleCommand to include wss parameter
 export const handleCommand = (
-  wsClient: WebSocket,
+  wsClient: WebSocketClient, // Adjusted parameter type
   message: string,
   wss: WebSocketServer
 ) => {
-  const command = JSON.parse(message);
+  const command: Command = JSON.parse(message);
 
   switch (command.type) {
     case 'reg':
-      handleRegistration(wsClient, command); // Registration might not need wss
+      handleRegistration(wsClient, command); // Now correctly expecting a WebSocketClient
       break;
     case 'create_room':
-      handleCreateRoom(wsClient, command, wss); // Now passing wss
+      handleCreateRoom(wsClient, command, wss); // Consistently using WebSocketClient
       break;
     // Implement other cases for different command types
     default:

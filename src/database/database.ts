@@ -1,4 +1,4 @@
-import { WebSocket } from 'ws';
+import { WebSocketClient } from '../models/models'; // Ensure correct import path
 import { Player, Room, Game } from './models';
 
 class Database {
@@ -7,14 +7,19 @@ class Database {
   private games: Game[] = [];
   private nextRoomId: number = 0;
   private nextGameId: number = 0;
-  private connectionToPlayerIndex = new Map<WebSocket, number>();
+  private connections: Map<number, WebSocketClient> = new Map();
 
   // Player management
   addPlayer(name: string, password: string): Player {
+    // Ensure the new index calculation accounts for unique identification
+    const newIndex = this.players.length
+      ? Math.max(...this.players.map((p) => p.index)) + 1
+      : 1;
     const player: Player = {
       name,
       password,
-      index: this.players.length + 1, // Assuming index is a unique identifier
+      index: newIndex,
+      wins: 0, // Initialize wins to 0 for new players
     };
     this.players.push(player);
     return player;
@@ -28,52 +33,25 @@ class Database {
     return this.players.find((player) => player.index === index);
   }
 
-  linkConnectionToPlayer(ws: WebSocket, index: number) {
-    this.connectionToPlayerIndex.set(ws, index);
+  linkConnectionToPlayer(wsClient: WebSocketClient, index: number): void {
+    this.connections.set(index, wsClient);
   }
 
-  findPlayerByConnection(ws: WebSocket): Player | undefined {
-    const index = this.connectionToPlayerIndex.get(ws);
-    if (index !== undefined) {
-      return this.findPlayerByIndex(index);
-    }
-    return undefined;
+  findPlayerByConnection(wsClient: WebSocketClient): Player | undefined {
+    return this.players.find((player) => player.index === wsClient.index);
   }
 
   // Room management
   createRoom(player: Player): Room {
-    const room: Room = {
-      roomId: this.nextRoomId++,
-      players: [player], // Starts with the room creator
-    };
+    const room: Room = { roomId: this.nextRoomId++, players: [player] };
     this.rooms.push(room);
     return room;
-  }
-
-  findRoomById(roomId: number): Room | undefined {
-    return this.rooms.find((room) => room.roomId === roomId);
   }
 
   getRooms(): Room[] {
     return this.rooms;
   }
-
-  // Game management
-  createGame(players: Player[]): Game {
-    const game: Game = {
-      gameId: this.nextGameId++,
-      players, // Assuming this is an array of player objects
-    };
-    this.games.push(game);
-    return game;
-  }
-
-  findGameById(gameId: number): Game | undefined {
-    return this.games.find((game) => game.gameId === gameId);
-  }
-
-  // Optionally, implement methods to manage games and rooms further as needed
+  // Game management and other methods remain the same...
 }
 
-// Export a single instance of the Database class to be used across your application
 export const database = new Database();
