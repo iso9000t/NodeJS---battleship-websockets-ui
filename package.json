@@ -14,10 +14,12 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.4.5",
+    "uuid": "^9.0.1",
     "ws": "^8.16.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.19",
+    "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
     "tsx": "^4.7.1"
   }

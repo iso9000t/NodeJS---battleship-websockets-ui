@@ -5,8 +5,8 @@ import { database } from '../database/database';
 export function handleRegistration(ws: WebSocket, command: Command) {
   console.log('Received registration command:', command);
 
- const requestData = JSON.parse(command.data);
- console.log('Registration requestData:', requestData);
+  const requestData = JSON.parse(command.data);
+  console.log('Registration requestData:', requestData);
 
   // Attempt to find an existing player by name
   const existingPlayer = database.findPlayerByName(requestData.name);
@@ -23,12 +23,16 @@ export function handleRegistration(ws: WebSocket, command: Command) {
       id: command.id,
     };
     ws.send(JSON.stringify(response));
-    return; // Stop further execution if player exists
+    return;
   }
 
-  // Add new player to the database and log the new player object
+  // Add new player to the database
   const newPlayer = database.addPlayer(requestData.name, requestData.password);
-  console.log('New player added:', newPlayer); // This is where you add the logging
+
+  // Link this WebSocket connection to the new player's index
+  database.linkConnectionToPlayer(ws, newPlayer.index);
+
+  console.log('New player added and linked:', newPlayer);
 
   // Construct and send a success response
   const response = {

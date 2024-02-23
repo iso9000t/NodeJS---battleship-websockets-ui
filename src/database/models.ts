@@ -1,7 +1,7 @@
-export interface Player {
+export class Player {
   name: string;
-  password: string; // Consider storing hashed passwords for security reasons in a real-world app
-  index: number;
+  password: string; // Consider using hashed passwords for actual applications
+  index: number; // Unique identifier for the player
 }
 
 export interface Room {

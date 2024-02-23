@@ -10,9 +10,8 @@ wss.on('connection', (ws) => {
 
   ws.on('message', (data) => {
     const message = data.toString();
-    handleCommand(ws, message);
+    handleCommand(ws, message, wss);
   });
 
   ws.send(JSON.stringify({ message: 'Welcome to the WebSocket server!' }));
 });
-
