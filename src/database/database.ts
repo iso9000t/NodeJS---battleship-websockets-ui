@@ -7,11 +7,10 @@ class Database {
   private games: Game[] = [];
   private nextRoomId: number = 0;
   private nextGameId: number = 0;
-  private connections: Map<number, WebSocketClient> = new Map();
+  connections: Map<number, WebSocketClient> = new Map();
 
   // Player management
   addPlayer(name: string, password: string): Player {
-    // Ensure the new index calculation accounts for unique identification
     const newIndex = this.players.length
       ? Math.max(...this.players.map((p) => p.index)) + 1
       : 1;
@@ -19,7 +18,7 @@ class Database {
       name,
       password,
       index: newIndex,
-      wins: 0, // Initialize wins to 0 for new players
+      wins: 0,
     };
     this.players.push(player);
     return player;
