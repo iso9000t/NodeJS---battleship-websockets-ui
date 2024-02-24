@@ -70,7 +70,71 @@ class Database {
   getRooms(): Room[] {
     return this.rooms;
   }
-  // Game management and other methods remain the same...
+
+  addUserToRoom(player: Player, roomId: number | string): Room | undefined {
+    const room = this.rooms.find((room) => room.roomId === roomId);
+    if (!room) {
+      console.error(`Room not found: ${roomId}`);
+      return undefined;
+    }
+
+    // Check if the player is already in the room
+    const isPlayerInRoom = room.players.some((p) => p.index === player.index);
+    if (isPlayerInRoom) {
+      console.log(`Player ${player.name} is already in the room: ${roomId}`);
+      return room; // Return the room without adding the player again
+    }
+
+    if (room.players.length >= 2) {
+      // Assuming a maximum of 2 players per room
+      console.error(`Room is full: ${roomId}`);
+      return undefined;
+    }
+
+    room.players.push(player);
+    return room;
+  }
+
+  //Game logic
+  createGameSession(room: Room): Game {
+    // Logic to create a game session
+    const game: Game = {
+      gameId: this.nextGameId++, // Increment and assign a unique game ID
+      players: room.players,
+      // Initialize other game state properties as needed
+    };
+    this.games.push(game); // Add the new game to the games list
+    return game;
+  }
+
+  notifyPlayersGameStart(room: Room, game: Game) {
+    const message = JSON.stringify({
+      type: 'create_game',
+      data: {
+        idGame: game.gameId,
+        // idPlayer should be specific to the recipient, so you'll loop through each player to customize this part
+      },
+      id: 0,
+    });
+
+    room.players.forEach((player) => {
+      const wsClient = this.connections.get(player.index); // Assuming you have a way to get WebSocketClient by player index
+      if (wsClient) {
+        // Customize message for each player
+        const personalizedMessage = JSON.stringify({
+          ...JSON.parse(message),
+          data: {
+            ...JSON.parse(message).data,
+            idPlayer: player.index, // Assign the player's unique session ID here
+          },
+        });
+
+        wsClient.send(personalizedMessage);
+      }
+    });
+  }
 }
+
+
 
 export const database = new Database();
