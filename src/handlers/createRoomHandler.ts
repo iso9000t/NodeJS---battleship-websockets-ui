@@ -4,14 +4,12 @@ import { Command, CommandType, WebSocketClient } from '../models/models';
 import { updateRoom } from './updateRoomHandler';
 
 export function handleCreateRoom(
-  wsClient: WebSocketClient, // Change this parameter type
+  wsClient: WebSocketClient,
   command: Command,
   wss: WebSocketServer
 ) {
   console.log('Received create room command:', command);
 
-  // Since wsClient is now correctly typed as WebSocketClient,
-  // database.findPlayerByConnection should accept it without issues.
   const player = database.findPlayerByConnection(wsClient);
   if (!player) {
     wsClient.send(JSON.stringify({ error: 'Player not found' }));

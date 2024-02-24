@@ -1,4 +1,4 @@
-import { WebSocketClient } from '../models/models'; // Ensure correct import path
+import { WebSocketClient } from '../models/models';
 import { Player, Room, Game } from './models';
 
 class Database {
@@ -42,10 +42,21 @@ class Database {
   }
 
   // Room management
-  createRoom(player: Player): Room {
-    const room: Room = { roomId: this.nextRoomId++, players: [player] };
-    this.rooms.push(room);
-    return room;
+  createRoom(player: Player): Room | undefined {
+    // Check if the player already has a room
+    const existingRoom = this.rooms.find((room) =>
+      room.players.some((p) => p.index === player.index)
+    );
+
+    if (existingRoom) {
+      console.log(`Player ${player.name} already has a created room.`);
+      // Optionally, return the existing room or handle differently
+      return existingRoom;
+    } else {
+      const room: Room = { roomId: this.nextRoomId++, players: [player] };
+      this.rooms.push(room);
+      return room;
+    }
   }
 
   getRooms(): Room[] {

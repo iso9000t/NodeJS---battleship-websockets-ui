@@ -19,5 +19,4 @@ wss.on('connection', (ws) => {
     handleCommand(wsClient, messageAsString, wss);
   });
 
-  ws.send(JSON.stringify({ message: 'Welcome to the WebSocket server!' }));
 });
