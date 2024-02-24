@@ -68,7 +68,7 @@ class Database {
   }
 
   getRooms(): Room[] {
-    return this.rooms;
+    return this.rooms.filter((room) => room.players.length < 2);
   }
 
   addUserToRoom(player: Player, roomId: number | string): Room | undefined {
