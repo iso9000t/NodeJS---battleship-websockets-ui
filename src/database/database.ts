@@ -25,6 +25,14 @@ class Database {
     return player;
   }
 
+  getPlayers(): Player[] {
+    return this.players;
+  }
+
+  getWinners(): Player[] {
+    return this.players.filter((player) => player.wins > 0);
+  }
+
   findPlayerByName(name: string): Player | undefined {
     return this.players.find((player) => player.name === name);
   }

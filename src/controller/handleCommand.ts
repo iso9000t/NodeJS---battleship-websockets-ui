@@ -12,9 +12,11 @@ export const handleCommand = (
   const command: Command = JSON.parse(message);
 
   switch (command.type) {
+    // In handleCommand.ts or wherever you handle incoming WebSocket messages
     case 'reg':
-      handleRegistration(wsClient, command); // Now correctly expecting a WebSocketClient
+      handleRegistration(wsClient, command, wss); // Adjusted to pass wss
       break;
+
     case 'create_room':
       handleCreateRoom(wsClient, command, wss); // Consistently using WebSocketClient
       break;
