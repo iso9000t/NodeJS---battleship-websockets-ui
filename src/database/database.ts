@@ -67,7 +67,19 @@ class Database {
   }
 
   getRooms(): Room[] {
-    return this.rooms.filter((room) => room.players.length < 2);
+    return this.rooms.filter((room) => {
+      // Check that the room is not full (less than 2 players)
+      const isRoomNotFull = room.players.length < 2;
+
+      // Check that none of the players in the room are engaged in another room's game
+      const arePlayersNotInOtherGames = !room.players.some((player) =>
+        this.games.some((game) =>
+          game.players.some((gamePlayer) => gamePlayer.index === player.index)
+        )
+      );
+
+      return isRoomNotFull && arePlayersNotInOtherGames;
+    });
   }
 
   addUserToRoom(player: Player, roomId: number | string): Room | undefined {
