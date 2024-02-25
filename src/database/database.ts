@@ -1,5 +1,5 @@
 import { WebSocketClient } from '../models/models';
-import { Player, Room, Game } from './models';
+import { Player, Room, Game, Board } from './models';
 
 class Database {
   private players: Player[] = [];
@@ -123,11 +123,11 @@ class Database {
 
   //Game logic
   createGameSession(room: Room): Game {
-    // Logic to create a game session
     const game: Game = {
       gameId: this.nextGameId++, // Increment and assign a unique game ID
       players: room.players,
-      // Initialize other game state properties as needed
+      boards: new Map<number | string, Board>(),
+      currentTurnPlayerIndex: ''
     };
     this.games.push(game); // Add the new game to the games list
     return game;
@@ -158,6 +158,26 @@ class Database {
         wsClient.send(personalizedMessage);
       }
     });
+  }
+
+  updateGame(updatedGame: Game): void {
+    const gameIndex = this.games.findIndex(
+      (game) => game.gameId === updatedGame.gameId
+    );
+    if (gameIndex > -1) {
+      this.games[gameIndex] = updatedGame; // Update the game state
+      console.log(`Game ${updatedGame.gameId} updated`);
+    } else {
+      console.log(`Game ${updatedGame.gameId} not found for update`);
+    }
+  }
+
+  getConnectionByPlayerIndex(index: number): WebSocketClient | undefined {
+    return this.connections.get(index);
+  }
+
+  getGameById(gameId: number): Game | undefined {
+    return this.games.find((game) => game.gameId === gameId);
   }
 }
 

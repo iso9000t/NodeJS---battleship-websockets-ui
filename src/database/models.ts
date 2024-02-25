@@ -13,5 +13,24 @@ export interface Room {
 export interface Game {
   gameId: number;
   players: Player[];
-  // Additional properties for game state can be added here
+  boards: Map<number | string, Board>; // Using player index or ID as key
+  currentTurnPlayerIndex: number | string; // To track the current player's turn
+  // You can add other properties as needed for game state, such as game status, winner, etc.
+}
+
+
+
+export interface Ship {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean; // true for horizontal, false for vertical
+  length: number;
+  type: 'small' | 'medium' | 'large' | 'huge';
+}
+
+export interface Board {
+  ships: Ship[];
+  // You might want to include other properties like board size or hit/miss marks
 }

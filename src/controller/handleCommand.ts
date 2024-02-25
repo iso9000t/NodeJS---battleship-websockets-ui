@@ -4,6 +4,7 @@ import { handleRegistration } from '../handlers/registrationHandler';
 import { handleCreateRoom } from '../handlers/createRoomHandler';
 import { Command, WebSocketClient } from '../models/models'; // Adjust import path as needed
 import { handleAddUserToRoom } from '../handlers/addUserToRoomHandler';
+import { handleAddShips } from '../handlers/addShipsHandler';
 
 export const handleCommand = (
   wsClient: WebSocketClient, // Adjusted parameter type
@@ -13,20 +14,21 @@ export const handleCommand = (
   const command: Command = JSON.parse(message);
 
   switch (command.type) {
-    // In handleCommand.ts or wherever you handle incoming WebSocket messages
     case 'reg':
-      handleRegistration(wsClient, command, wss); // Adjusted to pass wss
+      handleRegistration(wsClient, command, wss);
       break;
 
     case 'create_room':
       handleCreateRoom(wsClient, command, wss); // Consistently using WebSocketClient
       break;
 
-    // Add a new case for handling addUserToRoom command
     case 'add_user_to_room':
       handleAddUserToRoom(wsClient, command, wss);
       break;
 
+    case 'add_ships':
+      handleAddShips(wsClient, command, wss);
+      break;
     // Implement other cases for different command types
     default:
       console.error('Unhandled command:', command.type);
