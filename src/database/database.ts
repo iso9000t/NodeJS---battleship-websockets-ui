@@ -66,6 +66,22 @@ class Database {
     }
   }
 
+  removePlayerRooms(playerIndex: number) {
+    // Filter out rooms created by the disconnected player
+    const roomsToRemove = this.rooms.filter((room) =>
+      room.players.some((player) => player.index === playerIndex)
+    );
+
+    // Remove these rooms
+    roomsToRemove.forEach((room) => {
+      const roomIndex = this.rooms.indexOf(room);
+      if (roomIndex > -1) {
+        this.rooms.splice(roomIndex, 1);
+        console.log(`Removed room created by player index: ${playerIndex}`);
+      }
+    });
+  }
+
   getRooms(): Room[] {
     return this.rooms.filter((room) => {
       // Check that the room is not full (less than 2 players)
@@ -97,7 +113,6 @@ class Database {
     }
 
     if (room.players.length >= 2) {
-      // Assuming a maximum of 2 players per room
       console.error(`Room is full: ${roomId}`);
       return undefined;
     }
