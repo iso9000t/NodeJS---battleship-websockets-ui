@@ -1,3 +1,5 @@
+import { AttackStatus } from "../models/commonModels";
+
 export class Player {
   name: string;
   password: string; // Consider using hashed passwords for actual applications
@@ -18,8 +20,6 @@ export interface Game {
   // You can add other properties as needed for game state, such as game status, winner, etc.
 }
 
-
-
 export interface Ship {
   position: {
     x: number;
@@ -32,5 +32,6 @@ export interface Ship {
 
 export interface Board {
   ships: Ship[];
-  // You might want to include other properties like board size or hit/miss marks
+  attacks: { x: number; y: number; status: AttackStatus }[]; // Tracks all attack attempts, with their results
 }
+

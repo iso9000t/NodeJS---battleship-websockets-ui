@@ -1,10 +1,11 @@
-// Ensure WebSocketClient is imported correctly at the top
 import { WebSocketServer } from 'ws';
 import { handleRegistration } from '../handlers/registrationHandler';
 import { handleCreateRoom } from '../handlers/createRoomHandler';
-import { Command, WebSocketClient } from '../models/models'; // Adjust import path as needed
+import { Command, WebSocketClient } from '../models/commonModels'; // Adjust import path as needed
 import { handleAddUserToRoom } from '../handlers/addUserToRoomHandler';
 import { handleAddShips } from '../handlers/addShipsHandler';
+import { handleAttack } from '../handlers/attackHandler';
+/* import { handleRandomAttack } from '../handlers/randomAttackHandler'; */
 
 export const handleCommand = (
   wsClient: WebSocketClient, // Adjusted parameter type
@@ -29,7 +30,15 @@ export const handleCommand = (
     case 'add_ships':
       handleAddShips(wsClient, command, wss);
       break;
-    // Implement other cases for different command types
+
+    case 'attack':
+      handleAttack(wsClient, command, wss);
+      break;
+    
+   /*  case 'randomAttack':
+      handleRandomAttack(wsClient, command, wss);
+      break; */
+    
     default:
       console.error('Unhandled command:', command.type);
       wsClient.send(JSON.stringify({ error: 'Unknown command' }));

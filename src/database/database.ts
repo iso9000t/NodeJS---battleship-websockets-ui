@@ -1,4 +1,4 @@
-import { WebSocketClient } from '../models/models';
+import { WebSocketClient } from '../models/commonModels';
 import { Player, Room, Game, Board } from './models';
 
 class Database {

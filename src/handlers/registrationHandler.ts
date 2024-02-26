@@ -1,5 +1,5 @@
 import { WebSocket } from 'ws';
-import { Command, WebSocketClient } from '../models/models';
+import { Command, WebSocketClient } from '../models/commonModels';
 import { database } from '../database/database';
 // Assuming updateWinners is exported from where it's defined
 import { updateWinners } from './updateWinners';

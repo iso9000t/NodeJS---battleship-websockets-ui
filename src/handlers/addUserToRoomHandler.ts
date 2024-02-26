@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { database } from '../database/database';
-import { Command, CommandType, WebSocketClient } from '../models/models';
+import { Command, CommandType, WebSocketClient } from '../models/commonModels';
 import { updateRoom } from './updateRoomHandler';
 
 export function handleAddUserToRoom(

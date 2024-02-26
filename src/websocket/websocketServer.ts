@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { handleCommand } from '../controller/handleCommand';
-import { WebSocketClient } from '../models/models'; // Ensure this path is correct
+import { WebSocketClient } from '../models/commonModels'; // Ensure this path is correct
 import { database } from '../database/database';
 import { updateRoom } from '../handlers/updateRoomHandler';
 

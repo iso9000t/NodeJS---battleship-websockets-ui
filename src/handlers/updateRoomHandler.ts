@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { database } from '../database/database';
-import { CommandType, Command } from '../models/models';
+import { CommandType, Command } from '../models/commonModels';
 
 export function updateRoom(wss: WebSocketServer) {
   // Fetch the current state of all rooms from the database

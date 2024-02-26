@@ -1,7 +1,7 @@
 // Import necessary types and dependencies
-import { WebSocketClient } from '../models/models';
+import { WebSocketClient } from '../models/commonModels';
 import { database } from '../database/database';
-import { Command, CommandType } from '../models/models';
+import { Command, CommandType } from '../models/commonModels';
 
 // Player class definition
 export class Player {
