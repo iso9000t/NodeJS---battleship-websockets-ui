@@ -178,11 +178,6 @@ function calculateShipPositions(ship: Ship): { x: number; y: number }[] {
   return positions;
 }
 
-// Mock function to update the game state
-function updateGameState(game, attackResult) {
-  // Placeholder: Implement game state update logic
-}
-
 function checkGameOver(game) {
   // A simple game over check could just see if any player has all ships sunk
   return game.players.some((player) => isAllShipsSunk(game, player.index));
@@ -195,10 +190,6 @@ function isAllShipsSunk(game, playerIndex) {
   return board.ships.every((ship) => isShipKilled(ship, board));
 }
 
-function handleGameOver(game, wss) {
-  // Implement any logic you need when the game is over, such as saving the game, notifying all clients, etc.
-  console.log(`Game over! Winner: ${game.winner}`);
-}
 
 function isShipKilled(ship: Ship, board: Board): boolean {
   const positions = calculateShipPositions(ship);
@@ -226,7 +217,6 @@ export function markShipKilled(ship: Ship, board: Board): void {
         status: AttackStatus.killed,
       });
     } else {
-      // Update existing attack status to killed if it was previously marked as a shot
       const attackIndex = board.attacks.findIndex(
         (attack) => attack.x === position.x && attack.y === position.y
       );

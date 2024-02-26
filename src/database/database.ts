@@ -143,8 +143,8 @@ class Database {
     const game: Game = {
       gameId: this.nextGameId++, // Increment and assign a unique game ID
       players: room.players,
-      boards: new Map<number | string, Board>(),
-      currentTurnPlayerIndex: '',
+      boards: new Map<number, Board>(),
+      currentTurnPlayerIndex: 0,
     };
     this.games.push(game); // Add the new game to the games list
     return game;
@@ -196,8 +196,6 @@ class Database {
   getGameById(gameId: number): Game | undefined {
     return this.games.find((game) => game.gameId === gameId);
   }
-
-  // Inside the Database class
 
   // Method to handle player disconnection
   handlePlayerDisconnect(playerIndex: number): void {

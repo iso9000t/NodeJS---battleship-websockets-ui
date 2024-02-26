@@ -1,5 +1,3 @@
-// handlers/addShipsHandler.ts
-
 import { WebSocketServer } from 'ws';
 import { database } from '../database/database';
 import { Game, Board } from '../database/models';

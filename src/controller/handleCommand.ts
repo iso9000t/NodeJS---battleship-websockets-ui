@@ -4,12 +4,12 @@ import { handleCreateRoom } from '../handlers/createRoomHandler';
 
 import { handleAddUserToRoom } from '../handlers/addUserToRoomHandler';
 import { handleAddShips } from '../handlers/addShipsHandler';
-import { handleAttack } from '../handlers/attackHandler';
+/* import { handleAttack } from '../handlers/attackHandler'; */
 import { WebSocketClient, Command } from '../models/commonModels';
 /* import { handleRandomAttack } from '../handlers/randomAttackHandler'; */
 
 export const handleCommand = (
-  wsClient: WebSocketClient, // Adjusted parameter type
+  wsClient: WebSocketClient,
   message: string,
   wss: WebSocketServer
 ) => {
@@ -21,7 +21,7 @@ export const handleCommand = (
       break;
 
     case 'create_room':
-      handleCreateRoom(wsClient, command, wss); // Consistently using WebSocketClient
+      handleCreateRoom(wsClient, command, wss);
       break;
 
     case 'add_user_to_room':
@@ -32,9 +32,9 @@ export const handleCommand = (
       handleAddShips(wsClient, command, wss);
       break;
 
-    case 'attack':
+   /*  case 'attack':
       handleAttack(wsClient, command, wss);
-      break;
+      break; */
     
    /*  case 'randomAttack':
       handleRandomAttack(wsClient, command, wss);

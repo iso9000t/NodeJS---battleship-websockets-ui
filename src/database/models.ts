@@ -1,12 +1,9 @@
 import { AttackStatus } from "../models/commonModels";
 
-
-
-
 export class Player {
   name: string;
-  password: string; // Consider using hashed passwords for actual applications
-  index: number; // Unique identifier for the player
+  password: string;
+  index: number; 
   wins: number;
 }
 
@@ -19,8 +16,8 @@ export interface Game {
   gameId: number;
   players: Player[];
   boards: Map<number | string, Board>; // Using player index or ID as key
-  currentTurnPlayerIndex: number | string; // To track the current player's turn
-  // You can add other properties as needed for game state, such as game status, winner, etc.
+  currentTurnPlayerIndex: number
+  // other properties as needed for game state, such as game status, winner, etc.
 }
 
 export interface Ship {
