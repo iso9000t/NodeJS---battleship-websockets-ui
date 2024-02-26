@@ -11,7 +11,6 @@ export interface Command {
   id: number;
 }
 
-
 export enum CommandType {
   registration = 'reg',
   createGame = 'create_game',

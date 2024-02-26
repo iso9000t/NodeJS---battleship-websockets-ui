@@ -1,9 +1,9 @@
-import { AttackStatus } from "../models/commonModels";
+import { AttackStatus } from '../models/commonModels';
 
 export class Player {
   name: string;
   password: string;
-  index: number; 
+  index: number;
   wins: number;
 }
 
@@ -15,9 +15,8 @@ export interface Room {
 export interface Game {
   gameId: number;
   players: Player[];
-  boards: Map<number | string, Board>; // Using player index or ID as key
-  currentTurnPlayerIndex: number
-  // other properties as needed for game state, such as game status, winner, etc.
+  boards: Map<number | string, Board>;
+  currentTurnPlayerIndex: number;
 }
 
 export interface Ship {
@@ -25,14 +24,14 @@ export interface Ship {
     x: number;
     y: number;
   };
-  direction: boolean; // true for horizontal, false for vertical
+  direction: boolean;
   length: number;
   type: 'small' | 'medium' | 'large' | 'huge';
 }
 
 export interface Board {
   ships: Ship[];
-  attacks: { x: number; y: number; status: AttackStatus }[]; // Tracks all attack attempts, with their results
+  attacks: { x: number; y: number; status: AttackStatus }[];
 }
 
 export interface Winner {

@@ -14,9 +14,7 @@ export function handleRegistration(ws: WebSocket, command: Command, wss) {
   const existingPlayer = database.findPlayerByName(requestData.name);
 
   if (existingPlayer) {
-    // Player exists, check password
     if (existingPlayer.password === requestData.password) {
-      // Password matches, player is logging back in
       wsClient.index = existingPlayer.index;
       wsClient.name = existingPlayer.name;
       database.linkConnectionToPlayer(wsClient, existingPlayer.index);
@@ -34,7 +32,6 @@ export function handleRegistration(ws: WebSocket, command: Command, wss) {
         })
       );
     } else {
-      // Password does not match
       wsClient.send(
         JSON.stringify({
           type: 'reg',
@@ -46,10 +43,9 @@ export function handleRegistration(ws: WebSocket, command: Command, wss) {
         })
       );
     }
-    return; // Stop further processing
+    return;
   }
 
-  // If the player doesn't exist, add them as new
   const newPlayer = database.addPlayer(requestData.name, requestData.password);
   wsClient.index = newPlayer.index;
   wsClient.name = newPlayer.name;

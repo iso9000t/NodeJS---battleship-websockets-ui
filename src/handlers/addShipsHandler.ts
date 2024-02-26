@@ -17,16 +17,13 @@ export function handleAddShips(
     return;
   }
 
-  // Assuming you have a way to get a player's board by their index or ID
-  // Correctly initialize a board with both ships and attacks arrays if it doesn't exist
   const defaultBoard: Board = { ships: [], attacks: [] };
   const board = game.boards.get(indexPlayer) || defaultBoard;
-  board.ships = ships; // Replace with the new ships
+  board.ships = ships;
   game.boards.set(indexPlayer, board);
 
-  database.updateGame(game); // Update the game with the new board state
+  database.updateGame(game);
 
-  // Acknowledge the ships were added
   wsClient.send(
     JSON.stringify({
       type: 'add_ships',
@@ -35,27 +32,22 @@ export function handleAddShips(
     })
   );
 
-  // Check if both players have added their ships and start the game if so
   if (gameIsReadyToStart(game)) {
-    startGame(game, wss); // Start the game
+    startGame(game, wss);
   }
 }
 
 function gameIsReadyToStart(game: Game): boolean {
-  // Check if the number of boards equals the number of players in the game
-  // This means all players have submitted their ships
   return game.boards.size === game.players.length;
 }
 
 function startGame(game: Game, wss: WebSocketServer) {
-  // Randomly select who starts to ensure fairness
   const startingPlayerIndex = Math.floor(Math.random() * game.players.length);
   const startingPlayerId = game.players[startingPlayerIndex].index;
-  game.currentTurnPlayerIndex = startingPlayerId; // Update game with the index of the player who starts
+  game.currentTurnPlayerIndex = startingPlayerId;
 
-  database.updateGame(game); // Update the game state in the database
+  database.updateGame(game);
 
-  // Notify each player about the start of the game and send them their ships
   game.players.forEach((player) => {
     const wsClient = database.getConnectionByPlayerIndex(player.index);
     if (wsClient) {
@@ -63,8 +55,8 @@ function startGame(game: Game, wss: WebSocketServer) {
       const startGameCommand = {
         type: 'start_game',
         data: JSON.stringify({
-          ships: playerShips ? playerShips.ships : [], // Send the player their own ships
-          currentPlayerIndex: startingPlayerId, // Notify who will start
+          ships: playerShips ? playerShips.ships : [],
+          currentPlayerIndex: startingPlayerId,
         }),
         id: 0,
       };
@@ -76,7 +68,6 @@ function startGame(game: Game, wss: WebSocketServer) {
     }
   });
 
-  // Optionally, send the first "turn" command to the starting player
   const wsClientStartingPlayer = database.getConnectionByPlayerIndex(
     game.currentTurnPlayerIndex
   );

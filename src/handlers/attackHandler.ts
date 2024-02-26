@@ -18,26 +18,19 @@ export function handleAttack(
 
   const attackResult = determineAttackResult(x, y, game, indexPlayer);
 
-  // Directly update the game state here, if necessary
-  // For example, switching turns could be handled here based on your game rules
-
-  // Construct and send the attack feedback
   const feedback = {
     type: 'attack',
     data: JSON.stringify({
       position: { x, y },
-      currentPlayer: game.currentTurnPlayerIndex, // Or adjust based on your turn logic
+      currentPlayer: game.currentTurnPlayerIndex,
       status: attackResult.status,
     }),
     id: 0,
   };
 
-  // Send feedback to the attacking player
   wsClient.send(JSON.stringify(feedback));
 
-  // Update the game state based on the attack result
   function updateGameState(game, attackResult) {
-    // Switch turn to the next player
     const currentPlayerIndex = game.currentTurnPlayerIndex;
     const nextPlayerIndex = game.players.find(
       (player) => player.index !== currentPlayerIndex
@@ -51,18 +44,15 @@ export function handleAttack(
       winner = game.players.find(
         (player) => !isAllShipsSunk(game, player.index)
       );
-      game.winner = winner ? winner.index : null; // Set the game's winner
+      game.winner = winner ? winner.index : null;
     }
 
-    // Update the game in the database
     database.updateGame(game);
 
-    // Notify all players about the attack result and whose turn it is next
     notifyPlayers(game, attackResult, isGameOver, winner);
 
-    // If the game is over, additional logic for handling the game's conclusion
     if (isGameOver) {
-      handleGameOver(game); // Assuming handleGameOver doesn't require wss directly
+      handleGameOver(game);
     }
   }
 
@@ -86,10 +76,7 @@ export function handleAttack(
     });
   }
 
-  // Assuming isAllShipsSunk and checkGameOver are implemented as before
-
   function handleGameOver(game) {
-    // Logic to handle game over conditions, like logging, notifying players, etc.
     console.log(`Game over! Winner: ${game.winner}`);
   }
 
@@ -105,8 +92,6 @@ export function handleAttack(
       id: 0,
     })
   );
-
-  // Additional logic to notify the other player, update turns, etc., goes here
 }
 
 // Mock function to determine the result of an attack
@@ -120,7 +105,7 @@ function determineAttackResult(
   const opponentIndex = game.players.findIndex(
     (player) => player.index !== indexPlayer
   );
-  
+
   const opponent = game.players[opponentIndex];
   const opponentBoard = game.boards.get(opponent.index);
   if (opponentBoard) {
@@ -189,7 +174,6 @@ function isAllShipsSunk(game, playerIndex) {
 
   return board.ships.every((ship) => isShipKilled(ship, board));
 }
-
 
 function isShipKilled(ship: Ship, board: Board): boolean {
   const positions = calculateShipPositions(ship);

@@ -1,8 +1,6 @@
-
 import { WebSocketClient } from '../models/commonModels';
 import { Player, Room, Game, Board, Winner } from './models';
 import { WebSocket } from 'ws';
-
 
 class Database {
   private players: Player[] = [];
@@ -14,15 +12,12 @@ class Database {
   connections: Map<number, WebSocketClient> = new Map();
 
   constructor() {
-    // Your constructor code, if any
-    // Initialize your properties here if not using class field syntax
     this.players = [];
     this.rooms = [];
     this.games = [];
     this.nextRoomId = 0;
     this.nextGameId = 0;
     this.connections = new Map();
-    // Ensure winners is initialized if not already done so at the top level
     this.winners = [];
   }
 
@@ -67,14 +62,12 @@ class Database {
 
   // Room management
   createRoom(player: Player): Room | undefined {
-    // Check if the player already has a room
     const existingRoom = this.rooms.find((room) =>
       room.players.some((p) => p.index === player.index)
     );
 
     if (existingRoom) {
       console.log(`Player ${player.name} already has a created room.`);
-      // Optionally, return the existing room or handle differently
       return existingRoom;
     } else {
       const room: Room = { roomId: this.nextRoomId++, players: [player] };
@@ -84,12 +77,10 @@ class Database {
   }
 
   removePlayerRooms(playerIndex: number) {
-    // Filter out rooms created by the disconnected player
     const roomsToRemove = this.rooms.filter((room) =>
       room.players.some((player) => player.index === playerIndex)
     );
 
-    // Remove these rooms
     roomsToRemove.forEach((room) => {
       const roomIndex = this.rooms.indexOf(room);
       if (roomIndex > -1) {
@@ -101,10 +92,8 @@ class Database {
 
   getRooms(): Room[] {
     return this.rooms.filter((room) => {
-      // Check that the room is not full (less than 2 players)
       const isRoomNotFull = room.players.length < 2;
 
-      // Check that none of the players in the room are engaged in another room's game
       const arePlayersNotInOtherGames = !room.players.some((player) =>
         this.games.some((game) =>
           game.players.some((gamePlayer) => gamePlayer.index === player.index)
@@ -122,11 +111,10 @@ class Database {
       return undefined;
     }
 
-    // Check if the player is already in the room
     const isPlayerInRoom = room.players.some((p) => p.index === player.index);
     if (isPlayerInRoom) {
       console.log(`Player ${player.name} is already in the room: ${roomId}`);
-      return room; // Return the room without adding the player again
+      return room;
     }
 
     if (room.players.length >= 2) {
@@ -138,15 +126,14 @@ class Database {
     return room;
   }
 
-  //Game logic
   createGameSession(room: Room): Game {
     const game: Game = {
-      gameId: this.nextGameId++, // Increment and assign a unique game ID
+      gameId: this.nextGameId++,
       players: room.players,
       boards: new Map<number, Board>(),
       currentTurnPlayerIndex: 0,
     };
-    this.games.push(game); // Add the new game to the games list
+    this.games.push(game);
     return game;
   }
 
@@ -155,20 +142,18 @@ class Database {
       type: 'create_game',
       data: {
         idGame: game.gameId,
-        // idPlayer should be specific to the recipient, so you'll loop through each player to customize this part
       },
       id: 0,
     });
 
     room.players.forEach((player) => {
-      const wsClient = this.connections.get(player.index); // Assuming you have a way to get WebSocketClient by player index
+      const wsClient = this.connections.get(player.index);
       if (wsClient) {
-        // Customize message for each player
         const personalizedMessage = JSON.stringify({
           ...JSON.parse(message),
           data: {
             ...JSON.parse(message).data,
-            idPlayer: player.index, // Assign the player's unique session ID here
+            idPlayer: player.index,
           },
         });
 
@@ -197,9 +182,7 @@ class Database {
     return this.games.find((game) => game.gameId === gameId);
   }
 
-  // Method to handle player disconnection
   handlePlayerDisconnect(playerIndex: number): void {
-    // Find the game that includes the disconnected player
     const game = this.games.find((g) =>
       g.players.some((p) => p.index === playerIndex)
     );
@@ -209,14 +192,12 @@ class Database {
       return;
     }
 
-    // Identify the opponent and declare them as the winner
     const winner = game.players.find((p) => p.index !== playerIndex);
     if (!winner) {
       console.error('Opponent not found.');
       return;
     }
 
-    // Update the winner's wins count
     const winnerData = this.winners.find((w) => w.name === winner.name);
     if (winnerData) {
       winnerData.wins += 1;
@@ -224,13 +205,11 @@ class Database {
       this.winners.push({ name: winner.name, wins: 1 });
     }
 
-    // Remove the game from the active games list
     const gameIndex = this.games.indexOf(game);
     if (gameIndex > -1) {
       this.games.splice(gameIndex, 1);
     }
 
-    // Send the finish command to the winner
     const wsClient = this.connections.get(winner.index);
     if (wsClient && wsClient.readyState === WebSocket.OPEN) {
       wsClient.send(

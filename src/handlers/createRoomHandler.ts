@@ -1,4 +1,4 @@
-import {  WebSocketServer } from 'ws';
+import { WebSocketServer } from 'ws';
 import { database } from '../database/database';
 import { Command, CommandType, WebSocketClient } from '../models/commonModels';
 import { updateRoom } from './updateRoomHandler';
@@ -29,6 +29,5 @@ export function handleCreateRoom(
   };
   wsClient.send(JSON.stringify(response));
 
-  // Call updateRoom to broadcast the updated room list
   updateRoom(wss);
 }

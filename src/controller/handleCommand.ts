@@ -4,9 +4,7 @@ import { handleCreateRoom } from '../handlers/createRoomHandler';
 
 import { handleAddUserToRoom } from '../handlers/addUserToRoomHandler';
 import { handleAddShips } from '../handlers/addShipsHandler';
-/* import { handleAttack } from '../handlers/attackHandler'; */
 import { WebSocketClient, Command } from '../models/commonModels';
-/* import { handleRandomAttack } from '../handlers/randomAttackHandler'; */
 
 export const handleCommand = (
   wsClient: WebSocketClient,
@@ -32,14 +30,6 @@ export const handleCommand = (
       handleAddShips(wsClient, command, wss);
       break;
 
-   /*  case 'attack':
-      handleAttack(wsClient, command, wss);
-      break; */
-    
-   /*  case 'randomAttack':
-      handleRandomAttack(wsClient, command, wss);
-      break; */
-    
     default:
       console.error('Unhandled command:', command.type);
       wsClient.send(JSON.stringify({ error: 'Unknown command' }));

@@ -23,7 +23,6 @@ export function handleAddUserToRoom(
 
   console.log(`Player ${player.name} added to room: ${indexRoom}`);
 
-  // Notify the user that they've successfully joined the room
   const joinResponse: Command = {
     type: CommandType.addUserToRoom,
     data: JSON.stringify({
@@ -34,11 +33,9 @@ export function handleAddUserToRoom(
   };
   wsClient.send(JSON.stringify(joinResponse));
 
-  // If the room is now full, create a game session and notify both players
   if (room.players.length === 2) {
     const game = database.createGameSession(room);
 
-    // Notify both players in the room about the game start
     room.players.forEach((player) => {
       const playerWsClient = database.connections.get(player.index);
       if (playerWsClient) {
@@ -46,7 +43,7 @@ export function handleAddUserToRoom(
           type: 'create_game',
           data: JSON.stringify({
             idGame: game.gameId,
-            idPlayer: player.index, // Player's own ID
+            idPlayer: player.index,
           }),
           id: 0,
         };
@@ -55,6 +52,5 @@ export function handleAddUserToRoom(
     });
   }
 
-  // Update all clients about the room state change
   updateRoom(wss);
 }
