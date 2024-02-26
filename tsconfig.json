@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "ESNext", // or "ES2020", "ES2022", etc.
+    "module": "ESNext", 
     "target": "es2022",
     "outDir": "dist",
     "esModuleInterop": true,

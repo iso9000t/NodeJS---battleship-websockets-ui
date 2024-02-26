@@ -9,7 +9,7 @@
     "start:dev": "tsx watch ./server.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Andrei Auchynnikau",
+  "author": "Andrei Auchynnikau, Alex Grigorev",
   "keywords": [],
   "license": "ISC",
   "dependencies": {
