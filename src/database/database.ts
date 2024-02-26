@@ -1,5 +1,8 @@
+
 import { WebSocketClient } from '../models/commonModels';
-import { Player, Room, Game, Board } from './models';
+import { Player, Room, Game, Board, Winner } from './models';
+import { WebSocket } from 'ws';
+
 
 class Database {
   private players: Player[] = [];
@@ -7,7 +10,21 @@ class Database {
   private games: Game[] = [];
   private nextRoomId: number = 0;
   private nextGameId: number = 0;
+  winners: Winner[];
   connections: Map<number, WebSocketClient> = new Map();
+
+  constructor() {
+    // Your constructor code, if any
+    // Initialize your properties here if not using class field syntax
+    this.players = [];
+    this.rooms = [];
+    this.games = [];
+    this.nextRoomId = 0;
+    this.nextGameId = 0;
+    this.connections = new Map();
+    // Ensure winners is initialized if not already done so at the top level
+    this.winners = [];
+  }
 
   // Player management
   addPlayer(name: string, password: string): Player {
@@ -127,7 +144,7 @@ class Database {
       gameId: this.nextGameId++, // Increment and assign a unique game ID
       players: room.players,
       boards: new Map<number | string, Board>(),
-      currentTurnPlayerIndex: ''
+      currentTurnPlayerIndex: '',
     };
     this.games.push(game); // Add the new game to the games list
     return game;
@@ -178,6 +195,54 @@ class Database {
 
   getGameById(gameId: number): Game | undefined {
     return this.games.find((game) => game.gameId === gameId);
+  }
+
+  // Inside the Database class
+
+  // Method to handle player disconnection
+  handlePlayerDisconnect(playerIndex: number): void {
+    // Find the game that includes the disconnected player
+    const game = this.games.find((g) =>
+      g.players.some((p) => p.index === playerIndex)
+    );
+
+    if (!game) {
+      console.error('Game not found for disconnected player.');
+      return;
+    }
+
+    // Identify the opponent and declare them as the winner
+    const winner = game.players.find((p) => p.index !== playerIndex);
+    if (!winner) {
+      console.error('Opponent not found.');
+      return;
+    }
+
+    // Update the winner's wins count
+    const winnerData = this.winners.find((w) => w.name === winner.name);
+    if (winnerData) {
+      winnerData.wins += 1;
+    } else {
+      this.winners.push({ name: winner.name, wins: 1 });
+    }
+
+    // Remove the game from the active games list
+    const gameIndex = this.games.indexOf(game);
+    if (gameIndex > -1) {
+      this.games.splice(gameIndex, 1);
+    }
+
+    // Send the finish command to the winner
+    const wsClient = this.connections.get(winner.index);
+    if (wsClient && wsClient.readyState === WebSocket.OPEN) {
+      wsClient.send(
+        JSON.stringify({
+          type: 'finish',
+          data: JSON.stringify({ winPlayer: winner.index }),
+          id: 0,
+        })
+      );
+    }
   }
 }
 

@@ -9,18 +9,89 @@ export function handleAttack(
   wss: WebSocketServer
 ) {
   const { gameId, x, y, indexPlayer } = JSON.parse(command.data);
-
   const game = database.getGameById(gameId);
+
   if (!game) {
     wsClient.send(JSON.stringify({ error: 'Game not found' }));
     return;
   }
 
-  // Mocking the attack result determination
   const attackResult = determineAttackResult(x, y, game, indexPlayer);
 
+  // Directly update the game state here, if necessary
+  // For example, switching turns could be handled here based on your game rules
+
+  // Construct and send the attack feedback
+  const feedback = {
+    type: 'attack',
+    data: JSON.stringify({
+      position: { x, y },
+      currentPlayer: game.currentTurnPlayerIndex, // Or adjust based on your turn logic
+      status: attackResult.status,
+    }),
+    id: 0,
+  };
+
+  // Send feedback to the attacking player
+  wsClient.send(JSON.stringify(feedback));
+
   // Update the game state based on the attack result
-  updateGameState(game, attackResult);
+  function updateGameState(game, attackResult) {
+    // Switch turn to the next player
+    const currentPlayerIndex = game.currentTurnPlayerIndex;
+    const nextPlayerIndex = game.players.find(
+      (player) => player.index !== currentPlayerIndex
+    ).index;
+    game.currentTurnPlayerIndex = nextPlayerIndex;
+
+    // Check if the game is over
+    const isGameOver = checkGameOver(game);
+    let winner = null;
+    if (isGameOver) {
+      winner = game.players.find(
+        (player) => !isAllShipsSunk(game, player.index)
+      );
+      game.winner = winner ? winner.index : null; // Set the game's winner
+    }
+
+    // Update the game in the database
+    database.updateGame(game);
+
+    // Notify all players about the attack result and whose turn it is next
+    notifyPlayers(game, attackResult, isGameOver, winner);
+
+    // If the game is over, additional logic for handling the game's conclusion
+    if (isGameOver) {
+      handleGameOver(game); // Assuming handleGameOver doesn't require wss directly
+    }
+  }
+
+  function notifyPlayers(game, attackResult, isGameOver, winner) {
+    game.players.forEach((player) => {
+      const client = database.getConnectionByPlayerIndex(player.index);
+      if (client) {
+        client.send(
+          JSON.stringify({
+            type: 'update_game_state',
+            data: JSON.stringify({
+              attackResult,
+              nextPlayerIndex: game.currentTurnPlayerIndex,
+              gameOver: isGameOver,
+              winner: winner ? winner.index : null,
+            }),
+            id: 0,
+          })
+        );
+      }
+    });
+  }
+
+  // Assuming isAllShipsSunk and checkGameOver are implemented as before
+
+  function handleGameOver(game) {
+    // Logic to handle game over conditions, like logging, notifying players, etc.
+    console.log(`Game over! Winner: ${game.winner}`);
+  }
 
   // Send the attack result to the player
   wsClient.send(
@@ -39,11 +110,25 @@ export function handleAttack(
 }
 
 // Mock function to determine the result of an attack
-function determineAttackResult(x: number, y: number, game: Game, indexPlayer: number | string): { status: AttackStatus } {
+function determineAttackResult(
+  x: number,
+  y: number,
+  game: Game,
+  indexPlayer: number | string
+): { status: AttackStatus } {
   // Find the opponent based on indexPlayer
-  const opponentIndex = game.players.findIndex(player => player.index !== indexPlayer);
+  const opponentIndex = game.players.findIndex(
+    (player) => player.index !== indexPlayer
+  );
+  
   const opponent = game.players[opponentIndex];
   const opponentBoard = game.boards.get(opponent.index);
+  if (opponentBoard) {
+    console.log(
+      `Ship data for player ${opponentIndex} at the time of attack:`,
+      opponentBoard.ships
+    );
+  }
 
   if (!opponentBoard) {
     console.log('No opponent board found');
@@ -77,31 +162,43 @@ function determineAttackResult(x: number, y: number, game: Game, indexPlayer: nu
   }
 }
 
-
 function isShipHit(x: number, y: number, ship: Ship): boolean {
   const positions = calculateShipPositions(ship);
-  return positions.some(position => position.x === x && position.y === y);
+  return positions.some((position) => position.x === x && position.y === y);
 }
 
-function calculateShipPositions(ship: Ship): {x: number, y: number}[] {
+function calculateShipPositions(ship: Ship): { x: number; y: number }[] {
   const positions = [];
   for (let i = 0; i < ship.length; i++) {
     positions.push({
       x: ship.direction ? ship.position.x + i : ship.position.x,
-      y: ship.direction ? ship.position.y : ship.position.y + i
+      y: ship.direction ? ship.position.y : ship.position.y + i,
     });
   }
   return positions;
 }
-
-
 
 // Mock function to update the game state
 function updateGameState(game, attackResult) {
   // Placeholder: Implement game state update logic
 }
 
+function checkGameOver(game) {
+  // A simple game over check could just see if any player has all ships sunk
+  return game.players.some((player) => isAllShipsSunk(game, player.index));
+}
 
+function isAllShipsSunk(game, playerIndex) {
+  const board = game.boards.get(playerIndex);
+  if (!board) return false;
+
+  return board.ships.every((ship) => isShipKilled(ship, board));
+}
+
+function handleGameOver(game, wss) {
+  // Implement any logic you need when the game is over, such as saving the game, notifying all clients, etc.
+  console.log(`Game over! Winner: ${game.winner}`);
+}
 
 function isShipKilled(ship: Ship, board: Board): boolean {
   const positions = calculateShipPositions(ship);
@@ -138,5 +235,3 @@ export function markShipKilled(ship: Ship, board: Board): void {
     }
   });
 }
-
-

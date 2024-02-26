@@ -1,5 +1,8 @@
 import { AttackStatus } from "../models/commonModels";
 
+
+
+
 export class Player {
   name: string;
   password: string; // Consider using hashed passwords for actual applications
@@ -35,3 +38,7 @@ export interface Board {
   attacks: { x: number; y: number; status: AttackStatus }[]; // Tracks all attack attempts, with their results
 }
 
+export interface Winner {
+  name: string;
+  wins: number;
+}

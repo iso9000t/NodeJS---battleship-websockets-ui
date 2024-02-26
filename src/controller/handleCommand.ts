@@ -1,10 +1,11 @@
 import { WebSocketServer } from 'ws';
 import { handleRegistration } from '../handlers/registrationHandler';
 import { handleCreateRoom } from '../handlers/createRoomHandler';
-import { Command, WebSocketClient } from '../models/commonModels'; // Adjust import path as needed
+
 import { handleAddUserToRoom } from '../handlers/addUserToRoomHandler';
 import { handleAddShips } from '../handlers/addShipsHandler';
 import { handleAttack } from '../handlers/attackHandler';
+import { WebSocketClient, Command } from '../models/commonModels';
 /* import { handleRandomAttack } from '../handlers/randomAttackHandler'; */
 
 export const handleCommand = (

@@ -1,13 +1,16 @@
+// handlers/addShipsHandler.ts
+
 import { WebSocketServer } from 'ws';
 import { database } from '../database/database';
-import { Game, Board } from '../database/models'; // Ensure Board is imported if defined in models
-import { WebSocketClient, Command } from '../models/commonModels';
+import { Game, Board } from '../database/models';
+import { Command, WebSocketClient } from '../models/commonModels';
 
 export function handleAddShips(
   wsClient: WebSocketClient,
   command: Command,
   wss: WebSocketServer
 ) {
+  console.log('Received add_ships command:', command);
   const { gameId, ships, indexPlayer } = JSON.parse(command.data);
 
   const game: Game | undefined = database.getGameById(gameId);
@@ -67,7 +70,10 @@ function startGame(game: Game, wss: WebSocketServer) {
         }),
         id: 0,
       };
-
+      console.log(
+        `Sending start_game to player ${player.index}:`,
+        startGameCommand
+      );
       wsClient.send(JSON.stringify(startGameCommand));
     }
   });
